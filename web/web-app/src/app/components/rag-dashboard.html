@@ -1,0 +1,95 @@
+<div class="container mt-5">
+    <h2 class="text-center mb-4">RAG Upload (Streaming) & Vector Search</h2>
+
+    <!-- Upload -->
+    <app-bootstrap-card header="Upload File">
+        <input type="file" class="form-control mb-3" (change)="onUpload($event)" [disabled]="isUploading()">
+        <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-outline-danger" (click)="clearChunks()" [disabled]="isUploading()">Clear</button>
+            <span class="text-muted ms-2">{{ uploadStatus() }}</span>
+        </div>
+    </app-bootstrap-card>
+
+    <!-- Chunk Preview -->
+    <app-bootstrap-card header="Chunk Preview (Live)">
+        <div class="mb-3 d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Filter chunks..." [ngModel]="chunkFilter()"
+                (ngModelChange)="chunkFilter.set($event)">
+            <button class="btn btn-sm btn-outline-secondary text-nowrap" (click)="toggleShowAll()">
+                {{ showAllChunks() ? 'Show Less' : 'Show All' }}
+            </button>
+        </div>
+
+        <div class="mb-2 text-muted small">
+            Total: {{ allChunks().length }} | Matched: {{ filteredChunks().length }} | Showing: {{
+            displayedChunks().length }}
+        </div>
+
+        <app-chunk-list [chunks]="displayedChunks()" emptyMessage="No chunks yet."></app-chunk-list>
+    </app-bootstrap-card>
+
+    <!-- Raw JSON -->
+    <app-bootstrap-card header="Raw JSON">
+        <pre class="bg-light p-2 border rounded"
+            style="max-height: 200px; overflow: auto;">{{ allChunks() | json }}</pre>
+    </app-bootstrap-card>
+
+    <!-- RAG Search -->
+    <app-bootstrap-card header="RAG Search (Vector)">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col-md-7">
+                <input type="text" class="form-control" placeholder="Ask something..." [ngModel]="searchQuery()"
+                    (ngModelChange)="searchQuery.set($event)" (keyup.enter)="onSearch()">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" [ngModel]="topK()" (ngModelChange)="topK.set($event)" min="1"
+                    max="20">
+            </div>
+            <div class="col-md-3 d-grid">
+                <button class="btn btn-success" (click)="onSearch()" [disabled]="isSearching()">
+                    {{ isSearching() ? 'Searching...' : 'Search' }}
+                </button>
+            </div>
+        </div>
+
+        <app-chunk-list [chunks]="searchResults()" emptyMessage="No search results."></app-chunk-list>
+    </app-bootstrap-card>
+
+    <!-- Document Selector -->
+    <app-bootstrap-card header="Available Documents">
+        <select class="form-select" [ngModel]="selectedDocId()" (ngModelChange)="selectedDocId.set($event)">
+            <option value="">Select a document...</option>
+            @for (doc of documents(); track doc.id) {
+            <option [value]="doc.id">{{ doc.fileName }} ({{ doc.documentType }})</option>
+            }
+        </select>
+        <div class="mt-2 text-muted small">Loaded from GET /rag/documents</div>
+    </app-bootstrap-card>
+
+    <!-- Ask Document -->
+    <app-bootstrap-card header="Ask a Document (RAG)">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col-md-9">
+                <input type="text" class="form-control" placeholder="Ask a question about the selected document"
+                    [ngModel]="askQuestion()" (ngModelChange)="askQuestion.set($event)" (keyup.enter)="onAsk()">
+            </div>
+            <div class="col-md-3 d-grid">
+                <button class="btn btn-primary" (click)="onAsk()" [disabled]="isAsking() || !selectedDocId()">
+                    {{ isAsking() ? 'Thinking...' : 'Ask Document' }}
+                </button>
+            </div>
+        </div>
+
+        @if (askResponse(); as response) {
+        <div class="mb-3">
+            <div class="fw-bold mb-1">Answer</div>
+            <div class="border rounded p-3 bg-light">{{ response.answer }}</div>
+        </div>
+
+        <div class="fw-bold mb-2">Sources</div>
+        <app-chunk-list [chunks]="response.sources" emptyMessage="No sources returned."></app-chunk-list>
+        } @else {
+        <div class="text-muted">No question asked yet.</div>
+        }
+    </app-bootstrap-card>
+</div>

@@ -1,0 +1,28 @@
+@if (chunks().length === 0) {
+<div class="text-muted">{{ emptyMessage() }}</div>
+} @else {
+@for (item of chunks(); track $index) {
+<div class="chunk-item mb-2 border-bottom pb-2">
+    <div class="d-flex justify-content-between">
+        <strong>
+            @if (item.index !== undefined) { Chunk #{{ item.index }} }
+            @else if (item.fileName) { {{ item.fileName }} }
+            @else { Source #{{ $index + 1 }} }
+        </strong>
+        <div>
+            @if (item.score !== undefined) {
+            <span class="badge bg-primary me-1">Score: {{ item.score | number:'1.4-4' }}</span>
+            }
+            <span class="badge bg-secondary">{{ item.text?.length || item.chunkText?.length }} chars</span>
+        </div>
+    </div>
+
+    @if (item.documentId) {
+    <div class="text-muted small">Doc {{ item.documentId }} | Chunk {{ item.chunkIndex }}</div>
+    }
+
+    <div class="chunk-text mt-2 text-break" style="white-space: pre-wrap;">{{ (item.text || item.chunkText) |
+        slice:0:800 }}</div>
+</div>
+}
+}
