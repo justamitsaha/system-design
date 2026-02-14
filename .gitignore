@@ -1,0 +1,84 @@
+############################
+# IntelliJ / JetBrains IDE
+############################
+.idea/
+*.iml
+*.iws
+out/
+*.ipr
+
+############################
+# VS Code / Copilot / AI tools
+############################
+.vscode/
+.vscode-test/
+
+# GitHub Copilot / AI cache (safe generic ignores)
+.copilot/
+.github/copilot/
+*.copilot*
+
+############################
+# OpenAI Codex / AI temp files
+############################
+.codex/
+.codex-cache/
+*.codex*
+
+############################
+# Google Gemini / AI temp
+############################
+.gemini/
+*.gemini*
+.ai/
+.ai-cache/
+
+############################
+# Node / Frontend
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+
+############################
+# Java / Spring Boot
+############################
+target/
+*.class
+*.jar
+*.war
+*.ear
+logs/
+*.log
+
+############################
+# OS Files
+############################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+############################
+# Environment / Secrets
+############################
+.env
+.env.*
+*.local
+application-local.yml
+application-local.properties
+
+############################
+# Temporary files
+############################
+tmp/
+temp/
+*.tmp
+*.swp
+*~

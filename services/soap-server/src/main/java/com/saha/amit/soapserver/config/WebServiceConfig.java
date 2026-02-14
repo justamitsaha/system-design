@@ -1,4 +1,4 @@
-package com.saha.amit.soapserver;
+package com.saha.amit.soapserver.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.config.annotation.EnableWs;
