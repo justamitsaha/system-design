@@ -1,0 +1,55 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">CSV Upload Portal</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Upload Customer CSV
+    </div>
+    <div class="card-body">
+      <input type="file" (change)="onCustomerFileSelected($event)" class="form-control mb-3" />
+      <button class="btn btn-primary" (click)="uploadCustomerFile()" [disabled]="!customerFile() || uploading()">
+        Upload Customer File
+      </button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Upload Customer Churn CSV
+    </div>
+    <div class="card-body">
+      <input type="file" (change)="onChurnFileSelected($event)" class="form-control mb-3" />
+      <button class="btn btn-warning" (click)="uploadChurnFile()" [disabled]="!churnFile() || uploading()">
+        Upload Churn File
+      </button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Save File Only (No DB)
+    </div>
+    <div class="card-body">
+      <input type="file" (change)="onSaveOnlyFileSelected($event)" class="form-control mb-3" />
+      <button class="btn btn-secondary" (click)="saveFileOnly()" [disabled]="!saveOnlyFile() || uploading()">
+        Save File Only
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      Server Response
+    </div>
+    <div class="card-body">
+      <div class="card">
+        <div class="card-header">Processing Stream</div>
+        <div class="card-body stream-box">
+          @for (line of response(); track line) {
+            <div class="stream-line">{{ line }}</div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Customer & Churn Browser</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Data Selection
+    </div>
+    <div class="card-body">
+      <div class="row gy-2">
+        <div class="col-md-3">
+          <select class="form-select" [ngModel]="datasetType()" (ngModelChange)="datasetType.set($event); loadPage()">
+            <option value="customers">Customers</option>
+            <option value="churn">Churn</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="number" class="form-control" [ngModel]="page()" (ngModelChange)="page.set($event)" placeholder="Page">
+        </div>
+        <div class="col-md-2">
+          <input type="number" class="form-control" [ngModel]="size()" (ngModelChange)="size.set($event)" placeholder="Size">
+        </div>
+        <div class="col-md-5 d-flex justify-content-end gap-2">
+          <button class="btn btn-primary" (click)="loadPage()" [disabled]="loading()">Load Page</button>
+          <button class="btn btn-danger" (click)="cleanup()">Cleanup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (data(); as currentData) {
+    @if (currentData.content && currentData.content.length > 0) {
+      <div class="card">
+        <div class="card-header">
+          Results for {{ datasetType() }}
+        </div>
+        <div class="card-body">
+          @if (datasetType() === 'customers') {
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Surname</th>
+                  <th>Geography</th>
+                  <th>Gender</th>
+                  <th>Age</th>
+                  <th>Score</th>
+                  <th>Exited</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of currentData.content; track row.customerId) {
+                  <tr>
+                    <td>{{ row.customerId }}</td>
+                    <td>{{ row.surname }}</td>
+                    <td>{{ row.geography }}</td>
+                    <td>{{ row.gender }}</td>
+                    <td>{{ row.age }}</td>
+                    <td>{{ row.creditScore }}</td>
+                    <td>{{ row.exited ? 'Yes' : 'No' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (datasetType() === 'churn') {
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Gender</th>
+                  <th>Tenure</th>
+                  <th>Internet</th>
+                  <th>Contract</th>
+                  <th>Monthly</th>
+                  <th>Churn</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of currentData.content; track row.customerId) {
+                  <tr>
+                    <td>{{ row.customerId }}</td>
+                    <td>{{ row.gender }}</td>
+                    <td>{{ row.tenure }}</td>
+                    <td>{{ row.internetService }}</td>
+                    <td>{{ row.contract }}</td>
+                    <td>{{ row.monthlyCharges }}</td>
+                    <td>{{ row.churn ? 'Yes' : 'No' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-secondary" (click)="prevPage()" [disabled]="currentData.first">Previous</button>
+            <span>Page {{ currentData.number + 1 }} of {{ currentData.totalPages }}</span>
+            <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentData.last">Next</button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="alert alert-info">
+        No data found for the selected criteria.
+      </div>
+    }
+  }
+</div>

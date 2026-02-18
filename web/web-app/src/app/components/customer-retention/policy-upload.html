@@ -1,0 +1,110 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Policy Upload (Retention RAG)</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">Upload File</div>
+    <div class="card-body">
+      <input type="file" (change)="onFileSelected($event)" class="form-control mb-3" />
+      <button class="btn btn-primary" (click)="uploadPolicy()" [disabled]="!policyFile() || uploading()">Upload & Chunk</button>
+    </div>
+  </div>
+
+  @if (uploading()) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Uploading...</span>
+      </div>
+    </div>
+  }
+
+  @if (chunks().length > 0) {
+    <div>
+      <div class="card mb-4">
+        <div class="card-header">Chunk Summary</div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div><strong>Total Chunks:</strong> {{ chunks().length }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">Chunk Preview</div>
+        <div class="card-body">
+          @for (chunk of chunks(); track chunk.index) {
+            <div class="chunk-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Chunk #{{ chunk.index }}</strong>
+                <span class="badge bg-secondary">{{ chunk.text.length }} chars</span>
+              </div>
+              <div class="chunk-text">{{ chunk.text }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="card mb-4">
+    <div class="card-header">RAG Search (Vector)</div>
+    <div class="card-body">
+
+      <div class="row g-2 align-items-center">
+        <div class="col-md-9">
+          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" class="form-control"
+            placeholder="Ask something (e.g. pricing rules, retention policy)">
+        </div>
+        <div class="col-md-3 d-grid">
+          <button class="btn btn-success" (click)="searchPolicy()" [disabled]="searching()">Search</button>
+        </div>
+      </div>
+
+      <hr />
+      
+      @if (searching()) {
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Searching...</span>
+          </div>
+        </div>
+      }
+
+      @if (searchError()) {
+        <div class="alert alert-danger">{{ searchError() }}</div>
+      }
+
+      @if (searchResults(); as results) {
+        @if (results.length > 0) {
+          @for (m of results; track m.chunkId; let i = $index) {
+            <div class="chunk-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>#{{ i + 1 }} | {{ m.fileName || "unknown" }}</strong>
+                <span class="badge bg-primary">Score: {{ m.score | number:'1.1-4' }}</span>
+              </div>
+
+              <div class="text-muted mt-1">
+                Doc: <strong>{{ m.documentId }}</strong> |
+                ChunkId: <strong>{{ m.chunkId }}</strong> |
+                ChunkIndex: <strong>{{ m.chunkIndex }}</strong>
+              </div>
+
+              <div class="chunk-text mt-2">{{ m.chunkText }}</div>
+            </div>
+          }
+        } @else {
+          <div class="text-warning">No matches found.</div>
+        }
+      }
+
+    </div>
+  </div>
+
+  @if (chunks().length > 0) {
+    <div class="card">
+      <div class="card-header">Raw JSON</div>
+      <div class="card-body">
+        <pre class="json-box">{{ chunks() | json }}</pre>
+      </div>
+    </div>
+  }
+</div>

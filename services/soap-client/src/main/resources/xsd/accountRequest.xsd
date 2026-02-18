@@ -1,6 +1,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://example.com/soap-service"
-           targetNamespace="http://example.com/soap-service"
+           xmlns:tns="http://com.saha.amit/account"
+           targetNamespace="http://com.saha.amit/account"
            elementFormDefault="qualified">
 
     <xs:element name="GetAccountRequest">
@@ -17,6 +17,42 @@
                 <xs:element name="holderName" type="xs:string"/>
                 <xs:element name="balance" type="xs:double"/>
                 <xs:element name="accountType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddAccountRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="holderName" type="xs:string"/>
+                <xs:element name="balance" type="xs:double"/>
+                <xs:element name="accountType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddAccountResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="accountNumber" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateAccountRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="accountNumber" type="xs:string"/>
+                <xs:element name="newBalance" type="xs:double"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateAccountResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -1,5 +1,6 @@
 package com.saha.amit.soapserver.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.config.annotation.EnableWs;
 
@@ -25,18 +26,33 @@ public class WebServiceConfig implements WsConfigurer { // Implement interface i
         return new ServletRegistrationBean<>(servlet, "/ws/*");
     }
 
-    @Bean(name = "employees")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema employeesSchema) {
+    @Bean(name = "accounts") // Changes URL to /ws/accounts.wsdl
+    public DefaultWsdl11Definition defaultWsdl11Definition(@Qualifier("accountSchema")XsdSchema accountsSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("EmployeesPort");
+        wsdl11Definition.setPortTypeName("AccountsPort"); // Logical name for the service interface
         wsdl11Definition.setLocationUri("/ws");
-        wsdl11Definition.setTargetNamespace("http://com.saha.amit/employee");
-        wsdl11Definition.setSchema(employeesSchema);
+        wsdl11Definition.setTargetNamespace("http://com.saha.amit/account"); // Updated namespace
+        wsdl11Definition.setSchema(accountsSchema);
         return wsdl11Definition;
     }
 
     @Bean
-    public XsdSchema employeesSchema() {
+    public XsdSchema accountSchema() {
         return new SimpleXsdSchema(new ClassPathResource("xsd/accountRequest.xsd"));
+    }
+
+    @Bean(name = "customers") // This exposes /ws/customers.wsdl
+    public DefaultWsdl11Definition customerWsdlDefinition(@Qualifier("customerSchema")XsdSchema customerSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("CustomersPort");
+        wsdl11Definition.setLocationUri("/ws");
+        wsdl11Definition.setTargetNamespace("http://com.saha.amit/customer");
+        wsdl11Definition.setSchema(customerSchema);
+        return wsdl11Definition;
+    }
+
+    @Bean
+    public XsdSchema customerSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("xsd/customerRequest.xsd"));
     }
 }

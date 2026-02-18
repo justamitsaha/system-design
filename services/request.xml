@@ -1,0 +1,11 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:acc="http://com.saha.amit/account">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <acc:AddAccountRequest>
+            <acc:holderName>Direct SOAP User</acc:holderName>
+            <acc:balance>999.00</acc:balance>
+            <acc:accountType>Savings</acc:accountType>
+        </acc:AddAccountRequest>
+    </soapenv:Body>
+</soapenv:Envelope>

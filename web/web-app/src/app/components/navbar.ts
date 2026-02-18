@@ -8,7 +8,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
-export class NavbarComponent {
+export class Navbar {
   // Use a signal for the hamburger toggle state
   isMenuOpen = signal(false);
 

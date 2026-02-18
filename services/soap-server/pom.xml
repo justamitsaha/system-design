@@ -70,7 +70,7 @@
           <sources>
             <source>src/main/resources/xsd</source>
           </sources>
-          <packageName>com.saha.amit.employee</packageName>
+          <packageName>com.saha.amit.account</packageName>
           <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
           <clearOutputDir>true</clearOutputDir>
         </configuration>

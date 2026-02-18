@@ -1,0 +1,138 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Policy-Based AI Retention Report</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">Analyze Customer</div>
+    <div class="card-body">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-8">
+          <input type="number" [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" class="form-control"
+            placeholder="Enter Customer ID (e.g. 15565706)" />
+        </div>
+        <div class="col-md-4 d-grid">
+          <button class="btn btn-primary" (click)="getPlan()" [disabled]="loading()">
+            Get AI Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (plan(); as data) {
+    <div>
+      <div class="card mb-4">
+        <div class="card-header">Report Summary</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Risk Level</div>
+                <div class="value">
+                  <span class="badge" [class]="riskBadgeClass(data.riskLevel)">{{ data.riskLevel }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr />
+              <div class="summary-item">
+                <div class="label">Reasoning</div>
+                <div class="value">
+                  <ul class="mb-0">
+                    @for (reason of data.reasoning; track reason) {
+                      <li>{{ reason }}</li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr />
+              <div class="summary-item">
+                <div class="label">Recommended Actions</div>
+                <div class="value">
+                  @for (action of data.actions; track action.title) {
+                    <div class="border rounded p-3 mb-2">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="fw-bold">{{ action.title }}</div>
+                        <span class="badge" [class]="priorityClass(action.priority)">{{ action.priority }}</span>
+                      </div>
+                      <div class="text-muted mt-1">{{ action.details }}</div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            @if (data.offer) {
+              <div class="col-12">
+                <hr />
+                <div class="summary-item">
+                  <div class="label">Offer</div>
+                  <div class="value">
+                    <div class="border rounded p-3">
+                      <div><span class="fw-bold">Type:</span> {{ data.offer.type }}</div>
+                      <div><span class="fw-bold">Description:</span> {{ data.offer.description }}</div>
+                      <div><span class="fw-bold">Discount:</span> {{ data.offer.discountPercent }}%</div>
+                      <div><span class="fw-bold">Duration:</span> {{ data.offer.durationMonths }} months</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div class="col-12">
+              <hr />
+              <div class="summary-item">
+                <div class="label">Citations (RAG Evidence)</div>
+                <div class="value">
+                  @if (data.citations && data.citations.length > 0) {
+                    <div class="list-group">
+                      @for (c of data.citations; track c.fileName + c.chunkIndex) {
+                        <div class="list-group-item">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <strong>{{ c.fileName }}</strong>
+                            <span class="badge bg-info text-dark">
+                              Score: {{ c.score | number:'1.1-4' }}
+                            </span>
+                          </div>
+                          <div class="text-muted mt-1">
+                            Chunk Index: <strong>{{ c.chunkIndex }}</strong>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="text-muted">
+                      No citations available.
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Raw JSON</div>
+        <div class="card-body">
+          <pre class="json-box">{{ data | json }}</pre>
+        </div>
+      </div>
+    </div>
+  }
+</div>

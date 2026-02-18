@@ -1,0 +1,131 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Customer Profile Lookup</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">Search</div>
+    <div class="card-body">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-8">
+          <input type="text" [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" class="form-control"
+            placeholder="Enter Customer ID (e.g. 15565701)" />
+        </div>
+        <div class="col-md-4 d-grid">
+          <button class="btn btn-primary" (click)="loadProfile()" [disabled]="loading()">
+            Get Customer Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (customer(); as data) {
+    <div>
+      <div class="card mb-4">
+        <div class="card-header">Profile Summary</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Customer ID</div>
+                <div class="value">{{ data.customerId }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Age / Gender</div>
+                <div class="value">{{ data.age }} / {{ data.gender }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Geography</div>
+                <div class="value">{{ data.geography }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Status</div>
+                <div class="value">
+                  @if (data.churn) {
+                    <span class="badge bg-danger">CHURN</span>
+                  }
+                  @if (!data.churn) {
+                    <span class="badge bg-success">ACTIVE</span>
+                  }
+                  @if (data.seniorCitizen) {
+                    <span class="badge bg-warning text-dark ms-1">Senior Citizen</span>
+                  }
+                  @if (!data.seniorCitizen) {
+                    <span class="badge bg-secondary ms-1">Non-Senior</span>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Credit Score</div>
+                <div class="value">{{ data.creditScore }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Products / Card</div>
+                <div class="value">{{ data.numOfProducts }} / {{ data.hasCrCard ? 'Yes' : 'No' }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Monthly Charges</div>
+                <div class="value">{{ data.monthlyCharges | currency:'INR' }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Total Charges</div>
+                <div class="value">{{ data.totalCharges | currency:'INR' }}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-item">
+                <div class="label">Balance</div>
+                <div class="value">{{ data.balance | currency:'INR' }}</div>
+              </div>
+            </div>
+            <div class="col-12">
+              <hr />
+              <div class="summary-item">
+                <div class="label">Services</div>
+                <div class="value">
+                  Internet: <strong>{{ data.internetService }}</strong>,
+                  Tech Support: <strong>{{ data.techSupport }}</strong>,
+                  Online Security: <strong>{{ data.onlineSecurity }}</strong>,
+                  Streaming TV: <strong>{{ data.streamingTv }}</strong>,
+                  Streaming Movies: <strong>{{ data.streamingMovies }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Raw JSON</div>
+        <div class="card-body">
+          <pre class="json-box">{{ data | json }}</pre>
+        </div>
+      </div>
+    </div>
+  }
+</div>
