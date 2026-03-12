@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { DashboardComponent } from './components/learning/dashboard';
+import { PracticeComponent } from './components/learning/practice';
+import { AnalyticsComponent } from './components/learning/analytics';
+import { AddQuestionComponent } from './components/learning/add-question';
 import { RagDashboard } from './components/rag-dashboard';
 import { ApiTest } from './components/api-test';
 import { CustomerRetentionDashboard } from './components/customer-retention/customer-retention-dashboard';
@@ -10,6 +14,11 @@ import { PolicyUpload } from './components/customer-retention/policy-upload';
 import { PolicyBasedRetention } from './components/customer-retention/policy-based-retention';
 
 export const routes: Routes = [
+    { path: '', component: DashboardComponent },
+    { path: 'practice/:topicId', component: PracticeComponent },
+    { path: 'analytics', component: AnalyticsComponent },
+    { path: 'analytics/:topicId', component: AnalyticsComponent },
+    { path: 'add-question', component: AddQuestionComponent },
     { path: 'rag', component: RagDashboard },
     { path: 'api', component: ApiTest },
     {
@@ -24,6 +33,5 @@ export const routes: Routes = [
             { path: 'policy-based-retention', component: PolicyBasedRetention },
             { path: '', redirectTo: 'csv-upload', pathMatch: 'full' }
         ]
-    },
-    { path: '', redirectTo: '/rag', pathMatch: 'full' } // Default page
+    }
 ];

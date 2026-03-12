@@ -1,5 +1,9 @@
-<div class="container mt-5">
-    <h2 class="text-center mb-4">RAG Upload (Streaming) & Vector Search</h2>
+<div class="container app-page">
+    <div class="page-header">
+        <div class="page-eyebrow">RAG Workspace</div>
+        <h1 class="page-title">RAG Upload & Vector Search</h1>
+        <p class="page-subtitle">Stream documents, preview chunks, and search your knowledge base.</p>
+    </div>
 
     <!-- Upload -->
     <app-bootstrap-card header="Upload File">
@@ -30,8 +34,7 @@
 
     <!-- Raw JSON -->
     <app-bootstrap-card header="Raw JSON">
-        <pre class="bg-light p-2 border rounded"
-            style="max-height: 200px; overflow: auto;">{{ allChunks() | json }}</pre>
+        <pre class="json-box">{{ allChunks() | json }}</pre>
     </app-bootstrap-card>
 
     <!-- RAG Search -->

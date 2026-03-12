@@ -1,1 +1,211 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --app-bg: #eef2f7;
+  --app-surface: #ffffff;
+  --app-border: #e2e8f0;
+  --app-muted: #64748b;
+  --app-accent: #2563eb;
+  --app-accent-soft: rgba(37, 99, 235, 0.12);
+  --app-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  --app-font: "Space Grotesk", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --app-font-mono: "JetBrains Mono", "SFMono-Regular", "Cascadia Mono", "Fira Code", monospace;
+}
+
+body {
+  background:
+    radial-gradient(1200px 500px at -10% -20%, rgba(37, 99, 235, 0.18), transparent 60%),
+    radial-gradient(900px 420px at 100% 0%, rgba(99, 102, 241, 0.15), transparent 60%),
+    var(--app-bg);
+  color: #0f172a;
+  font-family: var(--app-font);
+  line-height: 1.5;
+}
+
+a {
+  text-decoration: none;
+}
+
+.app-main {
+  min-height: calc(100vh - 72px);
+}
+
+.app-page {
+  padding-top: 1.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-muted);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.page-subtitle {
+  color: var(--app-muted);
+  margin-top: 0.35rem;
+  max-width: 60ch;
+}
+
+.card {
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  box-shadow: var(--app-shadow);
+  background: var(--app-surface);
+}
+
+.card-header {
+  background: #f8fafc;
+  border-bottom: 1px solid var(--app-border);
+  font-weight: 600;
+}
+
+.card-body {
+  background: var(--app-surface);
+}
+
+.navbar {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.navbar .navbar-brand {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.navbar .nav-link {
+  color: #475569;
+  font-weight: 500;
+}
+
+.navbar .nav-link.active {
+  color: var(--app-accent);
+}
+
+.app-subnav {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  padding: 0.5rem;
+  box-shadow: var(--app-shadow);
+}
+
+.app-subnav .nav-link {
+  border-radius: 0.75rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.app-subnav .nav-link.active {
+  background: var(--app-accent);
+  color: #ffffff;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.table tbody tr {
+  border-color: var(--app-border);
+}
+
+.table-hover tbody tr:hover {
+  background: #f8fafc;
+}
+
+.table-responsive {
+  border-radius: 0.75rem;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+}
+
+.table-responsive .table {
+  margin-bottom: 0;
+}
+
+.summary-item .label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--app-muted);
+}
+
+.summary-item .value {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.chunk-item {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: var(--app-shadow);
+}
+
+.chunk-item + .chunk-item {
+  margin-top: 0.75rem;
+}
+
+.chunk-text {
+  color: #0f172a;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+}
+
+.json-box {
+  max-height: 260px;
+  overflow: auto;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 0.85rem;
+  font-family: var(--app-font-mono);
+}
+
+.badge {
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.alert {
+  border-radius: 0.75rem;
+  border-color: var(--app-border);
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.75rem;
+  border-color: var(--app-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 0.2rem var(--app-accent-soft);
+}
+
+.btn {
+  border-radius: 0.75rem;
+  font-weight: 600;
+}

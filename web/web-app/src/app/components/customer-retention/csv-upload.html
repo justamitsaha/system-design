@@ -1,5 +1,9 @@
-<div class="container mt-5">
-  <h2 class="text-center mb-4">CSV Upload Portal</h2>
+<div class="container app-page">
+  <div class="page-header">
+    <div class="page-eyebrow">Customer Retention</div>
+    <h1 class="page-title">CSV Upload Portal</h1>
+    <p class="page-subtitle">Upload customer data, churn data, or save files for processing.</p>
+  </div>
 
   <div class="card mb-4">
     <div class="card-header">
@@ -42,13 +46,10 @@
       Server Response
     </div>
     <div class="card-body">
-      <div class="card">
-        <div class="card-header">Processing Stream</div>
-        <div class="card-body stream-box">
-          @for (line of response(); track line) {
-            <div class="stream-line">{{ line }}</div>
-          }
-        </div>
+      <div class="stream-box">
+        @for (line of response(); track line) {
+          <div class="stream-line">{{ line }}</div>
+        }
       </div>
     </div>
   </div>

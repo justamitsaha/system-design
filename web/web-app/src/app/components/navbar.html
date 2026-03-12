@@ -1,15 +1,21 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container">
-        <a class="navbar-brand" routerLink="/">Web-App</a>
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+            <span class="brand-mark">WA</span>
+            <span>Web-App</span>
+        </a>
 
         <button class="navbar-toggler" type="button" (click)="toggleMenu()">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" [class.show]="isMenuOpen()">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto gap-2 align-items-lg-center">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/rag" routerLinkActive="active">RAG Analysis</a>
+                    <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Learning Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/rag" routerLinkActive="active">RAG Studio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/api" routerLinkActive="active">API Tester</a>
