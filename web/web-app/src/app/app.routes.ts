@@ -12,9 +12,11 @@ import { CustomerProfile } from './components/customer-retention/customer-profil
 import { CustomerRetentionPlan } from './components/customer-retention/customer-retention-plan';
 import { PolicyUpload } from './components/customer-retention/policy-upload';
 import { PolicyBasedRetention } from './components/customer-retention/policy-based-retention';
+import { CommandHub } from './components/command-hub';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent },
+    { path: 'command-hub', component: CommandHub },
     { path: 'practice/:topicId', component: PracticeComponent },
     { path: 'analytics', component: AnalyticsComponent },
     { path: 'analytics/:topicId', component: AnalyticsComponent },
