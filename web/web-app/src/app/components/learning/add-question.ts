@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, signal, PLATFORM_ID, computed, HostListener, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ApiService, Topic } from '../../services/api.service';
+import { ApiService, Topic, Tag } from '../../services/api.service';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -65,12 +65,38 @@ import { FormsModule } from '@angular/forms';
               <button class="btn btn-sm btn-outline-primary" type="button" (click)="addOption()">+ Add Option</button>
             </div>
 
-            <div class="mb-4">
+            <!-- Autocomplete Tags -->
+            <div class="mb-4 tag-editor-container">
               <label class="form-label fw-bold">Tags</label>
-              <div class="input-group mb-2" style="max-width: 400px;">
-                <input type="text" class="form-control form-control-sm" placeholder="New tag..." #tagInput (keyup.enter)="addTag(tagInput)">
-                <button class="btn btn-sm btn-outline-secondary" type="button" (click)="addTag(tagInput)">Add</button>
+              <div class="position-relative" style="max-width: 400px;">
+                <div class="input-group input-group-sm mb-2">
+                  <input type="text" class="form-control" placeholder="Search or add new tag..." 
+                         [(ngModel)]="tagSearchQuery" name="tagSearch"
+                         (focus)="showTagDropdown = true"
+                         (keyup.enter)="addCurrentSearchAsTag()">
+                  <button class="btn btn-outline-secondary" type="button" (click)="addCurrentSearchAsTag()">Add</button>
+                </div>
+                
+                <!-- Autocomplete Dropdown -->
+                <div *ngIf="showTagDropdown" 
+                     class="list-group position-absolute w-100 shadow z-3 border" 
+                     style="max-height: 200px; overflow-y: auto; top: 100%;">
+                  <div class="d-flex justify-content-between align-items-center bg-light px-2 py-1 sticky-top border-bottom">
+                    <small class="text-muted fw-bold">EXISTING TAGS</small>
+                    <button class="btn btn-sm btn-link p-0 text-decoration-none text-danger fw-bold" (click)="showTagDropdown = false">×</button>
+                  </div>
+                  <button *ngFor="let tag of filteredAvailableTags()" 
+                          type="button"
+                          class="list-group-item list-group-item-action py-1 px-2 small"
+                          (click)="selectExistingTag(tag.name)">
+                    {{ tag.name }}
+                  </button>
+                  <div *ngIf="filteredAvailableTags().length === 0" class="list-group-item disabled small italic">
+                    {{ tagSearchQuery ? 'No existing tags match' : 'Type to search existing tags' }}
+                  </div>
+                </div>
               </div>
+
               <div class="d-flex flex-wrap gap-1">
                 <span *ngFor="let t of question.tags" class="badge bg-info text-white">
                   {{ t }} <span class="ms-1" style="cursor:pointer" (click)="removeTag(t)">×</span>
@@ -100,15 +126,43 @@ import { FormsModule } from '@angular/forms';
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .z-3 {
+      z-index: 1050;
+    }
+    .italic {
+      font-style: italic;
+    }
+  `]
 })
 export class AddQuestionComponent implements OnInit {
   private apiService = inject(ApiService);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private el = inject(ElementRef);
 
   topics = signal<Topic[]>([]);
+  availableTags = signal<Tag[]>([]);
   
+  tagSearchQuery: string = '';
+  showTagDropdown: boolean = false;
+
+  filteredAvailableTags = computed(() => {
+    const query = this.tagSearchQuery.toLowerCase();
+    const selected = this.question.tags;
+    return this.availableTags().filter(t => 
+      t.name.toLowerCase().includes(query) && !selected.includes(t.name)
+    );
+  });
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.el.nativeElement.querySelector('.tag-editor-container')?.contains(event.target)) {
+      this.showTagDropdown = false;
+    }
+  }
+
   question: any = {
     topic_id: null,
     question_text: '',
@@ -127,6 +181,7 @@ export class AddQuestionComponent implements OnInit {
 
   ngOnInit() {
     this.apiService.getTopics().subscribe(t => this.topics.set(t));
+    this.apiService.getTags().subscribe(tags => this.availableTags.set(tags));
     
     if (isPlatformBrowser(this.platformId)) {
       const storedId = localStorage.getItem('selectedUserId');
@@ -137,7 +192,7 @@ export class AddQuestionComponent implements OnInit {
   }
 
   onTypeChange() {
-    if (this.question.type === 'MCQ' && this.question.options.length === 0) {
+    if (this.question.type === 'MCQ' && (this.question.options?.length || 0) === 0) {
       this.question.options = [
         { option_text: '', is_correct: true },
         { option_text: '', is_correct: false }
@@ -160,12 +215,21 @@ export class AddQuestionComponent implements OnInit {
     this.question.options.forEach((o: any, i: number) => o.is_correct = i === index);
   }
 
-  addTag(input: HTMLInputElement) {
-    const val = input.value.trim();
+  selectExistingTag(tagName: string) {
+    if (!this.question.tags.includes(tagName)) {
+      this.question.tags.push(tagName);
+    }
+    this.tagSearchQuery = '';
+    this.showTagDropdown = false;
+  }
+
+  addCurrentSearchAsTag() {
+    const val = this.tagSearchQuery.trim();
     if (val && !this.question.tags.includes(val)) {
       this.question.tags.push(val);
-      input.value = '';
     }
+    this.tagSearchQuery = '';
+    this.showTagDropdown = false;
   }
 
   removeTag(tag: string) {
@@ -194,7 +258,7 @@ export class AddQuestionComponent implements OnInit {
 
     this.apiService.createManualQuestion(payload).subscribe({
       next: () => {
-        alert('Question added successfully' + (this.initialAttemptResult !== null ? ' with initial attempt logged!' : '!'));
+        alert('Question added successfully!');
         this.router.navigate(['/']);
       },
       error: (err) => {

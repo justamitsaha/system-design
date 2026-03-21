@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, signal, PLATFORM_ID, computed, HostListener, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ApiService, Question, Attempt, Tag, Topic } from '../../services/api.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -65,12 +65,39 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
 
-              <div *ngIf="source === 'DB' && availableTags().length > 0" style="min-width: 200px;">
+              <!-- Autocomplete Tag Filter for Library -->
+              <div *ngIf="source === 'DB'" class="tag-filter-container" style="min-width: 250px; position: relative;">
                 <label class="form-label d-block fw-bold">Filter by Tags:</label>
-                <select class="form-select form-select-sm" multiple [(ngModel)]="selectedFilterTags">
-                  <option *ngFor="let tag of availableTags()" [value]="tag.name">{{ tag.name }}</option>
-                </select>
-                <small class="text-muted d-block mt-1">Hold Ctrl to select multiple</small>
+                <div class="input-group input-group-sm mb-2">
+                  <input type="text" class="form-control" placeholder="Search tags..." 
+                         [(ngModel)]="tagSearchQuery" (focus)="showTagDropdown = true">
+                  <button class="btn btn-outline-secondary" type="button" (click)="tagSearchQuery = ''; showTagDropdown = false">×</button>
+                </div>
+                
+                <!-- Dropdown -->
+                <div *ngIf="showTagDropdown" 
+                     class="list-group position-absolute w-100 shadow z-3 border" 
+                     style="max-height: 200px; overflow-y: auto; top: 100%;">
+                  <div class="d-flex justify-content-between align-items-center bg-light px-2 py-1 sticky-top border-bottom">
+                    <small class="text-muted fw-bold">SUGGESTIONS</small>
+                    <button class="btn btn-sm btn-link p-0 text-decoration-none text-danger fw-bold" (click)="showTagDropdown = false">×</button>
+                  </div>
+                  <button *ngFor="let tag of filteredAvailableTags()" 
+                          class="list-group-item list-group-item-action py-1 px-2 small"
+                          (click)="addFilterTag(tag.name)">
+                    {{ tag.name }}
+                  </button>
+                  <div *ngIf="filteredAvailableTags().length === 0" class="list-group-item disabled small italic">
+                    No matching tags found
+                  </div>
+                </div>
+
+                <!-- Selected Tags Pills -->
+                <div class="d-flex flex-wrap gap-1 mt-1">
+                  <span *ngFor="let t of selectedFilterTags()" class="badge bg-info text-white">
+                    {{ t }} <span class="ms-1" style="cursor:pointer" (click)="removeFilterTag(t)">×</span>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -150,7 +177,6 @@ import { FormsModule } from '@angular/forms';
                         [ngModel]="userAnswer()" (ngModelChange)="userAnswer.set($event)" 
                         [disabled]="!!evaluation()"></textarea>
               
-              <!-- Reference Answer Logic -->
               <div class="mt-3">
                 <button class="btn btn-sm btn-outline-info" (click)="toggleAnswer()">
                   {{ showReferenceAnswer() ? 'Hide Model Answer' : 'Show Model Answer' }}
@@ -177,7 +203,6 @@ import { FormsModule } from '@angular/forms';
                 {{ q?.type === 'OPEN' ? 'AI Evaluate' : 'Submit Answer' }}
               </button>
               
-              <!-- Manual Success/Failure for OPEN -->
               <ng-container *ngIf="q?.type === 'OPEN'">
                 <button class="btn btn-outline-success btn-lg shadow-sm" (click)="submitAnswer(true)" [disabled]="!isAnswered()">Success</button>
                 <button class="btn btn-outline-danger btn-lg shadow-sm" (click)="submitAnswer(false)" [disabled]="!isAnswered()">Failure</button>
@@ -216,6 +241,12 @@ import { FormsModule } from '@angular/forms';
     .white-space-pre-wrap {
       white-space: pre-wrap;
     }
+    .z-3 {
+      z-index: 1050;
+    }
+    .italic {
+      font-style: italic;
+    }
   `]
 })
 export class PracticeComponent implements OnInit {
@@ -223,6 +254,7 @@ export class PracticeComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private el = inject(ElementRef);
 
   allTopics = signal<Topic[]>([]);
   selectedTopicId = signal<number | null>(null);
@@ -241,7 +273,24 @@ export class PracticeComponent implements OnInit {
   currentTags: string[] = [];
   
   availableTags = signal<Tag[]>([]);
-  selectedFilterTags: string[] = [];
+  tagSearchQuery: string = '';
+  showTagDropdown: boolean = false;
+  selectedFilterTags = signal<string[]>([]);
+
+  filteredAvailableTags = computed(() => {
+    const query = this.tagSearchQuery.toLowerCase();
+    const selected = this.selectedFilterTags();
+    return this.availableTags().filter(t => 
+      t.name.toLowerCase().includes(query) && !selected.includes(t.name)
+    );
+  });
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.el.nativeElement.querySelector('.tag-filter-container')?.contains(event.target)) {
+      this.showTagDropdown = false;
+    }
+  }
 
   showReferenceAnswer = signal<boolean>(false);
   isEditingAnswer: boolean = false;
@@ -274,6 +323,16 @@ export class PracticeComponent implements OnInit {
     this.apiService.getTags().subscribe(tags => this.availableTags.set(tags));
   }
 
+  addFilterTag(tagName: string) {
+    this.selectedFilterTags.update(tags => [...tags, tagName]);
+    this.tagSearchQuery = '';
+    this.showTagDropdown = false;
+  }
+
+  removeFilterTag(tagName: string) {
+    this.selectedFilterTags.update(tags => tags.filter(t => t !== tagName));
+  }
+
   getTopicName(id?: number): string {
     if (!id) return 'Unknown';
     return this.allTopics().find(t => t.id === id)?.name || 'Unknown';
@@ -294,7 +353,7 @@ export class PracticeComponent implements OnInit {
     
     const request = this.source === 'AI' 
       ? this.apiService.generateQuestion(topicId!, this.questionType(), this.difficulty() || 'MEDIUM', userId)
-      : this.apiService.getRandomQuestion(topicId, diff, this.selectedFilterTags, userId);
+      : this.apiService.getRandomQuestion(topicId, diff, this.selectedFilterTags(), userId);
 
     request.subscribe({
       next: (q) => {
