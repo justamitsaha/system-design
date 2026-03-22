@@ -1,0 +1,9 @@
+{
+  "tabs": [
+    { "id": "kubernetes", "label": "Kubernetes", "dataFile": "kubernetes.json" },
+    { "id": "docker", "label": "Docker", "dataFile": "docker.json" },
+    { "id": "git", "label": "Git", "dataFile": "git.json" },
+    { "id": "linux", "label": "Linux", "dataFile": "linux.json" },
+    { "id": "local", "label": "Local", "dataFile": "local.json" }
+  ]
+}

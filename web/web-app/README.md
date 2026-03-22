@@ -11,6 +11,36 @@ ng serve
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+In this mode, the **CommandHub** will load data from local files in `src/assets/json`.
+
+## Building
+
+### Local / Development Build (Uses Local Assets)
+To build the project using local assets (located in `src/assets/json`), run:
+
+```bash
+ng build
+```
+
+This is the default configuration. The resulting bundle will fetch command data from your local server's `/assets/json` directory.
+
+### Production Build (Uses GitHub Data)
+To build the project for production, fetching data dynamically from the GitHub repository, run:
+
+```bash
+ng build --configuration production
+```
+
+In this mode:
+- The `environment.ts` is replaced with `environment.prod.ts`.
+- The data source for CommandHub is set to `https://raw.githubusercontent.com/justamitsaha/configurationServer/main/json`.
+- The bundle is optimized for performance.
+
+## Build Troubleshooting
+
+If you encounter `HttpErrorResponse` (ECONNREFUSED) during the building process, it is likely due to Angular's **Prerendering** attempting to fetch data from local backends (like `localhost:8000`) that are not running. 
+
+We have implemented `isPlatformBrowser` checks in the core services (`ApiService`, `RagService`, `CustomerRetentionService`) to prevent these calls during the build phase. This ensures a clean build even if your local backend services are offline.
 
 ## Code scaffolding
 
@@ -20,22 +50,6 @@ Angular CLI includes powerful code scaffolding tools. To generate a new componen
 ng generate component component-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
@@ -43,17 +57,3 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 ```bash
 ng test
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

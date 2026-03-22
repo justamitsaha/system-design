@@ -1,0 +1,48 @@
+{
+  "urlMap": {},
+  "commandSections": [
+    {
+      "title": "Basic Git Commands",
+      "description": "Essential daily operations",
+      "commands": {
+        "git status": "Check working directory status",
+        "git add .": "Stage all changes",
+        "git commit -m \"message\"": "Commit staged changes",
+        "git push": "Push commits to remote",
+        "git pull": "Pull latest changes from remote",
+        "git fetch --all": "Fetch all remotes"
+      }
+    },
+    {
+      "title": "Branching",
+      "commands": {
+        "git branch": "List local branches",
+        "git branch -a": "List all branches including remote",
+        "git checkout -b feature/new-branch": "Create and switch to new branch",
+        "git checkout main": "Switch to main branch",
+        "git merge feature/branch": "Merge branch into current",
+        "git branch -d branch-name": "Delete local branch"
+      }
+    },
+    {
+      "title": "Stashing",
+      "commands": {
+        "git stash": "Stash current changes",
+        "git stash list": "List all stashes",
+        "git stash pop": "Apply and remove latest stash",
+        "git stash apply stash@{0}": "Apply specific stash",
+        "git stash drop stash@{0}": "Delete specific stash"
+      }
+    },
+    {
+      "title": "History & Logs",
+      "commands": {
+        "git log --oneline": "Compact commit history",
+        "git log --graph --oneline --all": "Visual branch history",
+        "git diff": "Show unstaged changes",
+        "git diff --staged": "Show staged changes",
+        "git blame filename": "Show who changed each line"
+      }
+    }
+  ]
+}

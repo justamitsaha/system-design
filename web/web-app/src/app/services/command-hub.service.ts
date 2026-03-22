@@ -1,6 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface TabConfig {
   id: string;
@@ -24,7 +25,7 @@ export interface AppData {
 })
 export class CommandHubService {
   private http = inject(HttpClient);
-  private readonly GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/justamitsaha/configurationServer/main/json';
+  private readonly GITHUB_RAW_BASE = environment.commandHubBaseUrl;
 
   tabs = signal<TabConfig[]>([]);
   loadingTabs = signal(true);

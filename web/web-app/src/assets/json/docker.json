@@ -1,0 +1,50 @@
+{
+  "urlMap": {},
+  "commandSections": [
+    {
+      "title": "Container Management",
+      "description": "Managing Docker containers",
+      "commands": {
+        "docker ps": "List running containers",
+        "docker ps -a": "List all containers",
+        "docker run -d --name myapp image": "Run container in background",
+        "docker stop container-name": "Stop a container",
+        "docker start container-name": "Start a stopped container",
+        "docker rm container-name": "Remove a container",
+        "docker rm $(docker ps -aq)": "Remove all containers"
+      }
+    },
+    {
+      "title": "Image Management",
+      "commands": {
+        "docker images": "List all images",
+        "docker pull image:tag": "Pull image from registry",
+        "docker build -t name:tag .": "Build image from Dockerfile",
+        "docker rmi image-name": "Remove an image",
+        "docker tag source target": "Tag an image",
+        "docker push image:tag": "Push image to registry"
+      }
+    },
+    {
+      "title": "Debugging",
+      "commands": {
+        "docker logs -f container-name": "Follow container logs",
+        "docker exec -it container-name sh": "Enter container shell",
+        "docker inspect container-name": "View container details",
+        "docker stats": "Live resource usage",
+        "docker top container-name": "Show container processes"
+      }
+    },
+    {
+      "title": "Docker Compose",
+      "commands": {
+        "docker-compose up -d": "Start all services",
+        "docker-compose down": "Stop and remove services",
+        "docker-compose logs -f": "Follow all service logs",
+        "docker-compose ps": "List compose services",
+        "docker-compose build": "Build all services",
+        "docker-compose restart service": "Restart specific service"
+      }
+    }
+  ]
+}

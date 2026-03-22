@@ -1,24 +1,31 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, map, catchError, of } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerRetentionService {
 
+  private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
   private baseUrl = 'http://localhost:8080';
   private reportingUrl = 'http://localhost:8081';
 
-  constructor(private http: HttpClient) { }
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
 
   uploadFile(endpoint: string, file: File): Observable<any> {
+    if (!this.isBrowser()) return of({});
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(`${this.baseUrl}${endpoint}`, formData, { responseType: 'text' });
   }
 
   uploadAndStream(endpoint: string, file: File, onChunk: (chunk: string) => void, onComplete: () => void, onError: (error: any) => void, useReportingUrl = false) {
+    if (!this.isBrowser()) return;
     const formData = new FormData();
     formData.append('file', file);
     const url = useReportingUrl ? this.reportingUrl : this.baseUrl;
@@ -57,10 +64,12 @@ export class CustomerRetentionService {
   }
 
   analyzeRetention(customerId: string): Observable<any> {
+    if (!this.isBrowser()) return of({});
     return this.http.get(`${this.reportingUrl}/retention/${customerId}/analyze`);
   }
 
   getCustomers(page: number, size: number): Observable<any> {
+    if (!this.isBrowser()) return of({ content: [], last: true, first: true, number: 0, totalPages: 0 });
     return this.http.get(`${this.baseUrl}/customerProfile/customers?page=${page}&size=${size}`, { responseType: 'text' })
       .pipe(
         map(res => this.handleFluxResponse(res)),
@@ -72,6 +81,7 @@ export class CustomerRetentionService {
   }
 
   getChurnData(page: number, size: number): Observable<any> {
+    if (!this.isBrowser()) return of({ content: [], last: true, first: true, number: 0, totalPages: 0 });
     return this.http.get(`${this.baseUrl}/customerProfile/customersChurn?page=${page}&size=${size}`, { responseType: 'text' })
       .pipe(
         map(res => this.handleFluxResponse(res)),
@@ -87,7 +97,6 @@ export class CustomerRetentionService {
       return { content: [], last: true, first: true, number: 0, totalPages: 0 };
     }
 
-    // 1. Try standard JSON first
     try {
       const parsed = JSON.parse(res);
       if (parsed && typeof parsed === 'object' && 'content' in parsed) {
@@ -104,7 +113,6 @@ export class CustomerRetentionService {
       }
       return { content: [parsed], last: true, first: true, number: 0, totalPages: 1 };
     } catch (e) {
-      // 2. Try NDJSON or concatenated JSON
       const items: any[] = [];
       try {
         let braceCount = 0;
@@ -118,22 +126,13 @@ export class CustomerRetentionService {
             if (braceCount === 0 && start !== -1) {
               try {
                 items.push(JSON.parse(res.substring(start, i + 1)));
-              } catch (parseErr) {
-                // Ignore individual parse errors
-              }
+              } catch (parseErr) {}
               start = -1;
             }
           }
         }
-
         if (items.length > 0) {
-          return {
-            content: items,
-            last: true,
-            first: true,
-            number: 0,
-            totalPages: 1
-          };
+          return { content: items, last: true, first: true, number: 0, totalPages: 1 };
         }
       } catch (e2) {
         console.error('Failed to parse response as JSON, NDJSON or concatenated JSON', e);
@@ -144,10 +143,12 @@ export class CustomerRetentionService {
   }
 
   cleanup(): Observable<any> {
+    if (!this.isBrowser()) return of({});
     return this.http.delete(`${this.baseUrl}/customerProfile/cleanup`);
   }
 
   getCustomerProfile(customerId: string): Observable<any> {
+    if (!this.isBrowser()) return of({});
     return this.http.get(`${this.baseUrl}/customerProfile/${customerId}`, { responseType: 'text' })
       .pipe(
         map(res => {
@@ -166,16 +167,19 @@ export class CustomerRetentionService {
   }
 
   uploadPolicyFile(file: File): Observable<any> {
+    if (!this.isBrowser()) return of({});
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(`${this.reportingUrl}/retention/policyUpload`, formData);
   }
 
   searchPolicy(query: string): Observable<any> {
+    if (!this.isBrowser()) return of([]);
     return this.http.get(`${this.reportingUrl}/retention/policySearch?query=${query}`);
   }
 
   analyzeRetentionWithRag(customerId: string): Observable<any> {
+    if (!this.isBrowser()) return of({});
     return this.http.get(`${this.reportingUrl}/retention/${customerId}/analyze/rag`);
   }
 }

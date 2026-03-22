@@ -1,0 +1,60 @@
+{
+  "urlMap": {},
+  "commandSections": [
+    {
+      "title": "File Operations",
+      "description": "Common file management commands",
+      "commands": {
+        "ls -la": "List all files with details",
+        "cd /path/to/dir": "Change directory",
+        "pwd": "Print working directory",
+        "mkdir -p dir/subdir": "Create nested directories",
+        "rm -rf directory": "Remove directory recursively",
+        "cp -r source dest": "Copy directory recursively",
+        "mv old new": "Move or rename file/directory"
+      }
+    },
+    {
+      "title": "File Content",
+      "commands": {
+        "cat filename": "Display file contents",
+        "less filename": "View file with pagination",
+        "head -n 20 filename": "Show first 20 lines",
+        "tail -f filename": "Follow file updates live",
+        "grep -r \"pattern\" .": "Search recursively for pattern",
+        "find . -name \"*.txt\"": "Find files by name"
+      }
+    },
+    {
+      "title": "Permissions",
+      "commands": {
+        "chmod 755 file": "Set read/write/execute permissions",
+        "chmod +x script.sh": "Make file executable",
+        "chown user:group file": "Change file ownership",
+        "ls -la": "View file permissions"
+      }
+    },
+    {
+      "title": "Process Management",
+      "commands": {
+        "ps aux": "List all processes",
+        "top": "Interactive process viewer",
+        "htop": "Better interactive process viewer",
+        "kill -9 PID": "Force kill process",
+        "pkill -f process-name": "Kill process by name",
+        "nohup command &": "Run command in background"
+      }
+    },
+    {
+      "title": "Networking",
+      "commands": {
+        "curl -X GET url": "Make HTTP GET request",
+        "wget url": "Download file from URL",
+        "netstat -tulpn": "Show listening ports",
+        "ss -tulpn": "Show socket statistics",
+        "ping hostname": "Test network connectivity",
+        "traceroute hostname": "Trace packet route"
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { Component, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, signal, computed } from '@angular/core';
+import { CommonModule, KeyValue } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -7,33 +7,40 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="card mb-4">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center" (click)="isCollapsed.set(!isCollapsed())" style="cursor: pointer">
-        <h5 class="mb-0 fs-6">Dynamic URL Generator</h5>
-        <span class="badge bg-secondary">{{ isCollapsed() ? '+' : '-' }}</span>
+    <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+      <div class="card-header bg-white border-bottom-0 py-3 d-flex justify-content-between align-items-center" 
+           (click)="isCollapsed.set(!isCollapsed())" style="cursor: pointer">
+        <h5 class="mb-0 fs-6 fw-bold">Dynamic URL Generator</h5>
+        <i class="bi" [class.bi-chevron-down]="isCollapsed()" [class.bi-chevron-up]="!isCollapsed()"></i>
       </div>
       
       @if (!isCollapsed()) {
-        <div class="card-body">
-          <div class="input-group input-group-sm mb-3">
-            <input type="text" class="form-control" [ngModel]="host()" (ngModelChange)="host.set($event)" placeholder="http://localhost">
-            <button class="btn btn-outline-secondary" type="button" (click)="host.set('http://localhost')">Reset</button>
+        <div class="card-body pt-0">
+          <div class="input-group input-group-sm mb-4 bg-light p-2 rounded">
+            <input type="text" class="form-control border-0 bg-transparent" 
+                   [ngModel]="host()" (ngModelChange)="host.set($event)" 
+                   placeholder="http://localhost">
+            <button class="btn btn-link text-decoration-none text-muted btn-sm" type="button" (click)="host.set('http://localhost')">Reset</button>
           </div>
 
-          <div class="list-group">
-            @for (entry of urlMap() | keyvalue; track entry.key) {
-              <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2">
-                <div class="text-truncate me-2" style="max-width: 80%">
-                  <div class="fw-bold small">{{ entry.key }}</div>
-                  <div class="text-muted font-monospace" style="font-size: 0.75rem">{{ host() }}{{ entry.value }}</div>
-                </div>
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary" (click)="copyUrl(host() + entry.value)">
-                    Copy
-                  </button>
-                  <button class="btn btn-outline-secondary" (click)="openUrl(host() + entry.value)">
-                    Open
-                  </button>
+          <div class="row g-2">
+            @for (entry of urlMap() | keyvalue: originalOrder; track entry.key) {
+              <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="p-3 rounded border bg-light h-100 d-flex flex-column justify-content-between">
+                  <div class="mb-2">
+                    <div class="fw-bold small text-dark opacity-75 mb-1">{{ entry.key }}</div>
+                    <div class="text-muted font-monospace text-truncate" style="font-size: 0.7rem">
+                      {{ host() }}{{ entry.value }}
+                    </div>
+                  </div>
+                  <div class="d-flex gap-1 mt-auto">
+                    <button class="btn btn-white btn-sm border flex-grow-1 py-1" (click)="copyUrl(host() + entry.value)">
+                      <i class="bi bi-copy me-1"></i> Copy
+                    </button>
+                    <button class="btn btn-white btn-sm border py-1" (click)="openUrl(host() + entry.value)">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             }
@@ -43,17 +50,22 @@ import { FormsModule } from '@angular/forms';
     </div>
   `,
   styles: [`
-    .font-monospace { font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .btn-white { background: white; color: #444; }
+    .btn-white:hover { background: #f8f9fa; }
+    .font-monospace { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    .bi-chevron-down, .bi-chevron-up { font-size: 0.8rem; transition: transform 0.2s; }
   `]
 })
 export class UrlGenerator {
   urlMap = input.required<Record<string, any>>();
   host = signal('http://localhost');
-  isCollapsed = signal(false);
+  isCollapsed = signal(true);
+
+  // Maintain original order from JSON
+  originalOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => 0;
 
   copyUrl(url: string) {
     navigator.clipboard.writeText(url);
-    // Could add a toast here
   }
 
   openUrl(url: string) {

@@ -1,0 +1,20 @@
+{
+  "urlMap": {},
+  "commandSections": [
+    {
+      "title": "Local caddy server",
+      "description": "Essential daily operations",
+      "commands": {
+        "cd C:\\Amit\\Work\\code\\system-design\\web\\web-app": "Go to code",
+        "ng build": "Build code",
+        "rmdir /s /q \"C:\\Amit\\Work\\caddy\\dist": "Remove existing dist",
+  		  "robocopy \"C:\\Amit\\Work\\code\\system-design\\web\\web-app\\dist\" \"C:\\Amit\\Work\\caddy\\dist\" /E /IS /IT /R:3 /W:5": "copy code",
+  		  "cd C:\\Amit\\Work\\caddy": "go to caddy",
+        "robocopy \"C:\\Amit\\Work\\code\\Java\\microservice\\configurationServer\\json\" \"C:\\Amit\\Work\\caddy\\dist\\web-app\\browser\\assets\\json\" /E /IS /IT /R:3 /W:5": "copy cofig to caddy",
+  		  "caddy run": "caddy run",
+        "robocopy \"C:\\Amit\\Work\\caddy\\dist\\web-app\\browser\\assets\\json\" \"C:\\Amit\\Work\\code\\Java\\microservice\\configurationServer\\json\" /E /IS /IT /R:3 /W:5": "copy cofig to configurationServer repo",
+        "cd C:\\Amit\\Work\\code\\Java\\microservice\\configurationServer\\json": "Go to config server"
+      }
+    }
+  ]
+}

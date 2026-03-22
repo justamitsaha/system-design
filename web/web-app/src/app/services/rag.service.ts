@@ -1,5 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
+import { Observable, of } from 'rxjs';
 
 export interface RagDocument {
     id: string;
@@ -33,13 +35,20 @@ export interface AskResponse {
 @Injectable({ providedIn: 'root' })
 export class RagService {
     private http = inject(HttpClient);
+    private platformId = inject(PLATFORM_ID);
     private readonly BASE_URL = 'http://localhost:8081';
 
-    getDocuments() {
+    private isBrowser(): boolean {
+        return isPlatformBrowser(this.platformId);
+    }
+
+    getDocuments(): Observable<RagDocument[]> {
+        if (!this.isBrowser()) return of([]);
         return this.http.get<RagDocument[]>(`${this.BASE_URL}/rag/documents`);
     }
 
     async uploadAndStream(file: File, onChunk: (chunk: any) => void): Promise<void> {
+        if (!this.isBrowser()) return;
         const formData = new FormData();
         formData.append('file', file);
 
@@ -84,12 +93,14 @@ export class RagService {
     }
 
     search(query: string, topK: number) {
+        if (!this.isBrowser()) return of([]);
         return this.http.get<SearchResult[]>(`${this.BASE_URL}/rag/search`, {
             params: { q: query, topK: topK.toString() }
         });
     }
 
     askDocument(documentId: string, question: string) {
+        if (!this.isBrowser()) return of({ answer: '', sources: [] });
         return this.http.post<AskResponse>(`${this.BASE_URL}/rag/${documentId}/ask`, { question });
     }
 }
