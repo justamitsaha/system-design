@@ -37,7 +37,7 @@ cat <<EOF > cluster-trust-policy.json
 EOF
 
 # 2. Create the Role
-CLUSTER_ROLE_ARN=$(aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://cluster-trust-policy.json --query 'Role.Arn' --output text)
+CLUSTER_ROLE_ARN=$(aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://2_EKS/cluster-trust-policy.json --query 'Role.Arn' --output text)
 
 # 3. Attach Required Managed Policy
 aws iam attach-role-policy --role-name $ROLE_NAME --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
@@ -118,6 +118,24 @@ aws eks create-nodegroup \
 # Wait for nodes to join
 echo "Waiting for Node Group..."
 aws eks wait nodegroup-active --cluster-name $CLUSTER_NAME --nodegroup-name $NODE_GROUP_NAME
+```
+
+### 3.1 Authorize Bastion Tunnels (Crucial for Local Access)
+**Purpose:** By default, EKS creates a strict Security Group for its nodes. Even though your Bastion has SSH access, EKS will block traffic on the database ports. We must explicitly tell the EKS Node Security Group to accept traffic coming from the Bastion on ports 5432, 6379, 8080, and 9092.
+
+```bash
+# 1. Get the auto-generated EKS Node Security Group ID
+NODE_SG=$(aws ec2 describe-instances --filters "Name=tag:eks:cluster-name,Values=$CLUSTER_NAME" --query 'Reservations[0].Instances[0].SecurityGroups[0].GroupId' --output text)
+
+# 2. Allow Bastion to access infrastructure ports
+# Postgres
+aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 5432 --source-group $BASTION_SG
+# Redis
+aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 6379 --source-group $BASTION_SG
+# Schema Registry
+aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 8080 --source-group $BASTION_SG
+# Kafka
+aws ec2 authorize-security-group-ingress --group-id $NODE_SG --protocol tcp --port 9092 --source-group $BASTION_SG
 ```
 
 #### 🗑️ Stop Compute Charges (Nodes Only)

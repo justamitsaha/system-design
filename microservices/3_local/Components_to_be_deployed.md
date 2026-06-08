@@ -67,3 +67,5 @@ For deep-dives into specific implementation details, please refer to the files i
 *   [**Centralized Config:**](./_documentation/ConfigServer.md) Setup for dynamic property updates and secrets.
 *   [**Observability:**](./_documentation/Actuator.md) Guide to Actuator endpoints and metrics exploration.
 *   [**Distributed Tracing:**](./_documentation/Distributed_tracing.md) Detailed tracing architecture.
+*   [**Kafka Deployment:**](./Kafka/Kafka.md) Setup for Kafka on EKS with local connectivity.
+*   [**Infra Management:**](./Infra_Management.md) Scripts for starting/stopping cost-incurring resources.

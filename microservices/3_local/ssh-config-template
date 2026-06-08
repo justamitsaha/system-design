@@ -1,0 +1,26 @@
+# Template for project-local SSH configuration
+# Replace the <PLACEHOLDERS> with your actual IPs before using.
+# IMPORTANT: Use the actual POD IPs (10.0.11.x or 10.0.12.x), NOT the ClusterIPs.
+
+Host ms-bastion
+    HostName 34.201.209.240
+    User ec2-user
+    # Ensure this points to the correct location of your PEM file (requires strict file permissions!)
+    IdentityFile ./anju.pem
+    
+    # -----------------------------------
+    # Port Forwarding (Tunnels)
+    # -----------------------------------
+    
+    # PostgreSQL Tunnel (Local 5432 -> Postgres Pod)
+    LocalForward 5432 10.0.12.178:5432
+    
+    # Redis Tunnel (Local 6379 -> Redis Pod)
+    LocalForward 6379 10.0.11.120:6379
+    
+    # Schema Registry Tunnel (Local 8080 -> Schema Registry Pod)
+    LocalForward 8080 10.0.11.138:8080
+    
+    # Kafka Tunnel (Local 9092 -> Kafka Broker 0 Pod)
+    LocalForward 9092 10.0.12.71:9092
+
