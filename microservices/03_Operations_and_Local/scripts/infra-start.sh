@@ -104,16 +104,16 @@ kubectl create -f 'https://strimzi.io/install/latest?namespace=infra' -n infra
 
 # 7.2 Deploy Postgres
 echo "Deploying Postgres Database..."
-kubectl apply -f ../2_EKS/1_postgres/postgres.yaml
+kubectl apply -f ../../02_Kubernetes_Data_Tier/Postgres/postgres.yaml
 
 # 7.3 Deploy Redis
 echo "Deploying Redis Cache..."
-kubectl apply -f ../2_EKS/3_Redis/redis.yaml
+kubectl apply -f ../../02_Kubernetes_Data_Tier/Redis/redis.yaml
 
 # 7.4 Deploy Kafka Cluster
 echo "Deploying Kafka Cluster..."
 sleep 15
-kubectl apply -f ../2_EKS/0_Kafka/kafka-cluster.yaml -n infra
+kubectl apply -f ../../02_Kubernetes_Data_Tier/Kafka/kafka-cluster.yaml -n infra
 
 # 8. Verification
 echo "⏳ Verifying resources are starting..."

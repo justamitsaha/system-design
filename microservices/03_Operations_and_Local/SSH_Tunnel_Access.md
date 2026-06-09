@@ -80,9 +80,9 @@ ssh -i anju.pem -N -L 9092:<KAFKA_BROKER_0_POD_IP>:9092 ec2-user@<BASTION_IP>
 
 If you do this frequently, typing the long commands gets tedious. You can automate it using the provided `ssh-config-template` file in this repository.
 
-1.  Open `3_local/ssh-config-template` and replace the `<PLACEHOLDERS>` with your Bastion IP and the **Pod IPs**.
+1.  Open `03_Operations_and_Local/ssh-config-template` and replace the `<PLACEHOLDERS>` with your Bastion IP and the **Pod IPs**.
 2.  Make sure the `IdentityFile` path points to your `anju.pem` key. (Note: On Windows, ensure your .pem file has strict permissions, or SSH will reject it).
 3.  Now, from the `microservices` directory, simply run:
     ```bash
-    ssh -F 3_local/ssh-config-template -N ms-bastion
+    ssh -F 03_Operations_and_Local/ssh-config-template -N ms-bastion
     ```

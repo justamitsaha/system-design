@@ -37,7 +37,7 @@ cat <<EOF > cluster-trust-policy.json
 EOF
 
 # 2. Create the Role
-CLUSTER_ROLE_ARN=$(aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://2_EKS/cluster-trust-policy.json --query 'Role.Arn' --output text)
+CLUSTER_ROLE_ARN=$(aws iam create-role --role-name $ROLE_NAME --assume-role-policy-document file://01_AWS_Infrastructure/policies/cluster-trust-policy.json --query 'Role.Arn' --output text)
 
 # 3. Attach Required Managed Policy
 aws iam attach-role-policy --role-name $ROLE_NAME --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
