@@ -1,0 +1,51 @@
+name: Deploy EKS Infrastructure & Data Tier
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # This pipeline ONLY runs if files in these specific folders are changed
+      - 'microservices/01_AWS_Infrastructure/**'
+      - 'microservices/02_Kubernetes_Data_Tier/**'
+      - 'microservices/03_Operations_and_Local/scripts/**'
+  
+  # Allows you to trigger this workflow manually from the GitHub Actions tab
+  workflow_dispatch:
+
+# These permissions are REQUIRED for OIDC authentication with AWS
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::418627430620:role/github-actions-eks-role
+
+jobs:
+  deploy-infrastructure:
+    name: Provision EKS and Deploy Manifests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          # The session name will show up in AWS CloudTrail logs
+          role-session-name: GitHubActions-EKS-Deployment
+
+      - name: Verify AWS Connection
+        run: aws sts get-caller-identity
+
+      - name: Make Scripts Executable
+        run: chmod +x ./microservices/03_Operations_and_Local/scripts/infra-start.sh
+
+      - name: Run Infrastructure Deployment Script
+        # We run the script from inside the scripts folder so its relative paths (../../) work correctly
+        working-directory: ./microservices/03_Operations_and_Local/scripts/
+        run: ./infra-start.sh

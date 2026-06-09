@@ -1,0 +1,39 @@
+name: Teardown EKS Infrastructure (Stop Billing)
+
+# This event allows you to trigger the workflow MANUALLY from the GitHub UI
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write 
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::418627430620:role/github-actions-eks-role
+
+jobs:
+  destroy-infrastructure:
+    name: Destroy EKS and Stop Hourly Costs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActions-EKS-Teardown
+
+      - name: Verify AWS Connection
+        run: aws sts get-caller-identity
+
+      - name: Make Scripts Executable
+        run: chmod +x ./microservices/03_Operations_and_Local/scripts/infra-stop.sh
+
+      - name: Run Infrastructure Teardown Script
+        working-directory: ./microservices/03_Operations_and_Local/scripts/
+        run: ./infra-stop.sh
