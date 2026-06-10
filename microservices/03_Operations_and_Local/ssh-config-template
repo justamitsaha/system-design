@@ -3,7 +3,7 @@
 # IMPORTANT: Use the actual POD IPs (10.0.11.x or 10.0.12.x), NOT the ClusterIPs.
 
 Host ms-bastion
-    HostName 34.201.209.240
+    HostName 44.214.100.153  #bastion host public IP
     User ec2-user
     # Ensure this points to the correct location of your PEM file (requires strict file permissions!)
     IdentityFile ./anju.pem
@@ -13,14 +13,14 @@ Host ms-bastion
     # -----------------------------------
     
     # PostgreSQL Tunnel (Local 5432 -> Postgres Pod)
-    LocalForward 5432 10.0.12.178:5432
+    LocalForward 5432 10.0.12.94:5432
     
     # Redis Tunnel (Local 6379 -> Redis Pod)
-    LocalForward 6379 10.0.11.120:6379
+    LocalForward 6379 10.0.11.40:6379
     
     # Schema Registry Tunnel (Local 8080 -> Schema Registry Pod)
-    LocalForward 8080 10.0.11.138:8080
+    LocalForward 8080 10.0.11.9:8080
     
     # Kafka Tunnel (Local 9092 -> Kafka Broker 0 Pod)
-    LocalForward 9092 10.0.12.71:9092
+    LocalForward 9092 10.0.12.245:9092
 
