@@ -1,0 +1,72 @@
+name: Deploy Data Tier Component
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: 'Select Component to Deploy'
+        required: true
+        default: 'postgres'
+        type: choice
+        options:
+          - 'postgres'
+          - 'redis'
+          - 'kafka_cluster'
+          - 'strimzi_operator'
+      namespace:
+        description: 'Namespace'
+        required: true
+        default: 'infra'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::418627430620:role/github-actions-eks-role
+  CLUSTER_NAME: microservice-eks-cluster
+
+jobs:
+  deploy-component:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Deploy Selected Component
+        run: |
+          case "${{ github.event.inputs.component }}" in
+            "postgres")
+              echo "🚀 Deploying Postgres..."
+              kubectl apply -f microservices/02_Kubernetes_Data_Tier/Postgres/postgres.yaml
+              ;;
+            "redis")
+              echo "🚀 Deploying Redis..."
+              kubectl apply -f microservices/02_Kubernetes_Data_Tier/Redis/redis.yaml
+              ;;
+            "kafka_cluster")
+              echo "🚀 Deploying Kafka Cluster..."
+              kubectl apply -f microservices/02_Kubernetes_Data_Tier/Kafka/kafka-cluster.yaml -n ${{ github.event.inputs.namespace }}
+              ;;
+            "strimzi_operator")
+              echo "🚀 Installing Strimzi Kafka Operator..."
+              kubectl create namespace ${{ github.event.inputs.namespace }} || true
+              kubectl create -f 'https://strimzi.io/install/latest?namespace=${{ github.event.inputs.namespace }}' -n ${{ github.event.inputs.namespace }}
+              ;;
+          esac
+
+      - name: Verify Deployment
+        run: |
+          echo "⏳ Waiting 10s for resource creation..."
+          sleep 10
+          kubectl get all -n ${{ github.event.inputs.namespace }}
