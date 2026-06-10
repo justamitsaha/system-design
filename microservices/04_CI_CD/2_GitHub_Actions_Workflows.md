@@ -38,6 +38,15 @@ If it runs, it executes the `infra-start.sh` script securely from the GitHub run
 
 This pipeline executes the `infra-stop.sh` script.
 
+### C. The K8s Operations Pipeline (`k8s-debug.yml`)
+**Goal:** Allows you to debug your cluster directly from the GitHub UI without needing a local terminal or SSH tunnel.
+
+This workflow is **Manual Only**. You can select operations from a dropdown menu:
+*   `get_pods`: Lists all running pods and their nodes.
+*   `get_services`: Shows internal IPs and ports.
+*   `get_pod_logs`: Retrieves the last 100 lines of logs for a specific pod.
+*   `describe_pod`: Shows detailed events and status for a specific pod.
+
 ---
 
 ## 🖱️ 3. Manual Triggers (`workflow_dispatch`)

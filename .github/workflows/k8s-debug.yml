@@ -1,0 +1,76 @@
+name: Kubernetes Debug & Operations
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Select Kubernetes Operation'
+        required: true
+        default: 'get_pods'
+        type: choice
+        options:
+          - 'get_pods'
+          - 'get_services'
+          - 'get_all_resources'
+          - 'describe_pod'
+          - 'get_pod_logs'
+      target_name:
+        description: 'Name of specific Pod/Deployment (leave blank for general commands)'
+        required: false
+      namespace:
+        description: 'Namespace'
+        required: true
+        default: 'infra'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::418627430620:role/github-actions-eks-role
+  CLUSTER_NAME: microservice-eks-cluster
+
+jobs:
+  k8s-ops:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Run Operation
+        run: |
+          case "${{ github.event.inputs.operation }}" in
+            "get_pods")
+              kubectl get pods -n ${{ github.event.inputs.namespace }} -o wide
+              ;;
+            "get_services")
+              kubectl get svc -n ${{ github.event.inputs.namespace }}
+              ;;
+            "get_all_resources")
+              kubectl get all -n ${{ github.event.inputs.namespace }}
+              ;;
+            "describe_pod")
+              if [ -z "${{ github.event.inputs.target_name }}" ]; then
+                echo "❌ Error: target_name is required for describe_pod"
+                exit 1
+              fi
+              kubectl describe pod ${{ github.event.inputs.target_name }} -n ${{ github.event.inputs.namespace }}
+              ;;
+            "get_pod_logs")
+              if [ -z "${{ github.event.inputs.target_name }}" ]; then
+                echo "❌ Error: target_name is required for get_pod_logs"
+                exit 1
+              fi
+              kubectl logs ${{ github.event.inputs.target_name }} -n ${{ github.event.inputs.namespace }} --tail=100
+              ;;
+          esac
