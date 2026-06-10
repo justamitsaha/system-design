@@ -71,6 +71,7 @@ desktop.ini
 .env
 .env.*
 *.local
+*.pem
 application-local.yml
 application-local.properties
 
