@@ -62,16 +62,40 @@ ssh -i anju.pem -N -L 6379:<REDIS_POD_IP>:6379 ec2-user@<BASTION_IP>
 ```
 *   **To connect locally (Redis CLI/Desktop Manager):** Use `localhost`, port `6379`. No password is set by default in this lab.
 
-### 3. Schema Registry & Kafka Tunnels
-**Goal:** Connect local tools to Kafka and the Schema Registry.
-*Note: Just like Postgres and Redis, you MUST use the Pod IPs for the brokers and the registry, not the ClusterIPs.*
+### 3. Kafka & Schema Registry Tunnels (The "Metadata" Challenge)
+**The Problem:** Kafka is unique. When you connect to port 9092, the cluster responds with the *internal hostnames* of its brokers (e.g., `my-cluster-dual-role-0...`). Your local machine cannot resolve these `.svc` addresses, leading to an `UnknownHostException`.
 
+**The Solution:** You must map these internal names to your local machine and tunnel each broker individually.
+
+#### Step A: Get all Broker Pod IPs
 ```bash
-# Tunnel for Schema Registry
-ssh -i anju.pem -N -L 8080:<SCHEMA_REGISTRY_POD_IP>:8080 ec2-user@<BASTION_IP>
+kubectl get pods -n infra -o wide
+```
+*Note the IPs for `my-cluster-dual-role-0`, `my-cluster-dual-role-1`, and `my-cluster-dual-role-2`.*
 
-# Tunnel for Kafka Broker 0 (Port 9092)
-ssh -i anju.pem -N -L 9092:<KAFKA_BROKER_0_POD_IP>:9092 ec2-user@<BASTION_IP>
+#### Step B: Create a Multi-Port Tunnel
+You must map each broker to a unique local port (e.g., 9092, 9093, 9094).
+```bash
+# Example for Broker 0
+ssh -i anju.pem -N -L 9092:<BROKER_0_POD_IP>:9092 ec2-user@<BASTION_IP>
+# Example for Broker 1
+ssh -i anju.pem -N -L 9093:<BROKER_1_POD_IP>:9092 ec2-user@<BASTION_IP>
+```
+
+#### Step C: The "Hosts File Hack" (Windows)
+1. Open **Notepad** as Administrator.
+2. Open `C:\Windows\System32\drivers\etc\hosts`.
+3. Add these lines (matching the names in your error logs):
+```text
+127.0.0.1 my-cluster-dual-role-0.my-cluster-kafka-brokers.infra.svc
+127.0.0.1 my-cluster-dual-role-1.my-cluster-kafka-brokers.infra.svc
+127.0.0.1 my-cluster-dual-role-2.my-cluster-kafka-brokers.infra.svc
+```
+
+#### Step D: Schema Registry Tunnel
+```bash
+# Tunnel for Schema Registry (Standard 8080)
+ssh -i anju.pem -N -L 8080:<SCHEMA_REGISTRY_POD_IP>:8080 ec2-user@<BASTION_IP>
 ```
 
 ---
