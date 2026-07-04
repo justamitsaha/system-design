@@ -1,0 +1,214 @@
+system-design/
+│
+├── README.md
+│
+├── 01_Event_Driven_Architecture/
+│   ├── README.md
+│   │
+│   ├── Messaging/
+│   │   ├── RabbitMQ.md
+│   │   ├── Kafka.md
+│   │   ├── Exchange_Topologies.md
+│   │   ├── Event_Payload_Design.md
+│   │   ├── Retry_and_DLQ.md
+│   │   └── Idempotency.md
+│   │
+│   ├── Reliability/
+│   │   ├── Dual_Write_Problem.md
+│   │   ├── Transactional_Outbox.md
+│   │   ├── CDC.md
+│   │   └── Event_Sourcing.md
+│   │
+│   └── Distributed_Transactions/
+│       ├── Saga.md
+│       ├── Choreography_vs_Orchestration.md
+│       └── Two_Phase_Commit.md
+│
+├── 02_Service_Communication/
+│   ├── README.md
+│   ├── REST_vs_gRPC.md
+│   ├── API_Gateway.md
+│   ├── BFF.md
+│   ├── Service_Discovery.md
+│   ├── Load_Balancer.md
+│   ├── Circuit_Breaker.md
+│   ├── Service_Mesh.md
+│   └── Sync_vs_Async.md
+│
+├── 03_Data_Architecture/
+│   ├── Database_Per_Service.md
+│   ├── CQRS.md
+│   ├── Caching.md
+│   ├── Sharding.md
+│   ├── Replication.md
+│   └── Distributed_Locking.md
+│
+├── 04_Deployment/
+│   ├── README.md
+│   │
+│   ├── Docker/
+│   │
+│   ├── Kubernetes/
+│   │
+│   ├── AWS/
+│   │   ├── EKS/
+│   │   ├── RDS/
+│   │   ├── MSK/
+│   │   ├── ElastiCache/
+│   │   └── Networking/
+│   │
+│   ├── Terraform/
+│   │
+│   └── GitHub_Actions/
+│
+├── 05_Reference_Architectures/
+│   ├── ECommerce/
+│   ├── Banking/
+│   ├── Food_Delivery/
+│   ├── URL_Shortener/
+│   └── Chat_System/
+│
+└── assets/
+    ├── diagrams/
+    └── images/
+
+system-design/
+│
+├── README.md
+│
+├── design_strategy/
+│   │
+│   ├── event_driven_architecture/
+│   │   ├── rabbitmq/
+│   │   │   ├── rabbitmq_basics.md
+│   │   │   ├── exchange_topologies.md
+│   │   │   ├── retries_and_dlq.md
+│   │   │   ├── event_payload_patterns.md
+│   │   │   └── diagrams/
+│   │   │
+│   │   ├── kafka/
+│   │   │
+│   │   ├── transactional_outbox/
+│   │   ├── saga/
+│   │   ├── cdc/
+│   │   └── event_sourcing/
+│   │
+│   ├── communication_patterns/
+│   │   ├── api_gateway.md
+│   │   ├── bff.md
+│   │   ├── service_mesh.md
+│   │   ├── rest_vs_grpc.md
+│   │   └── sync_vs_async.md
+│   │
+│   ├── data_patterns/
+│   │   ├── cqrs.md
+│   │   ├── caching.md
+│   │   ├── sharding.md
+│   │   └── replication.md
+│   │
+│   └── architecture_decisions/
+│       ├── rabbitmq_vs_kafka.md
+│       ├── choreography_vs_orchestration.md
+│       ├── api_gateway_vs_direct.md
+│       ├── outbox_vs_cdc.md
+│       └── sql_vs_nosql.md
+│
+├── deployment_strategy/
+│   │
+│   ├── local/
+│   │   ├── docker-compose/
+│   │   └── kind/
+│   │
+│   ├── kubernetes/
+│   │   ├── namespaces/
+│   │   ├── deployments/
+│   │   ├── services/
+│   │   ├── ingress/
+│   │   └── helm/
+│   │
+│   ├── aws/
+│   │   ├── eks/
+│   │   ├── rds/
+│   │   ├── msk/
+│   │   ├── elasticache/
+│   │   ├── alb/
+│   │   └── vpc/
+│   │
+│   └── github_actions/
+│       ├── build.yml
+│       ├── deploy-eks.yml
+│       └── destroy-eks.yml
+│
+└── assets/
+    ├── diagrams/
+    └── images/
+
+
+architecture/
+└── event_driven_architecture/
+    │
+    ├── README.md                     <-- Start here
+    │
+    ├── 01_Introduction/
+    │   ├── What_is_Event_Driven_Architecture.md
+    │   ├── Synchronous_vs_Asynchronous.md
+    │   ├── Events_vs_Messages.md
+    │   └── Event_Driven_Architecture_Pros_Cons.md
+    │
+    ├── 02_Messaging_Systems/
+    │   ├── RabbitMQ/
+    │   │   ├── RabbitMQ_Basics.md
+    │   │   ├── Exchanges.md
+    │   │   ├── Queues.md
+    │   │   ├── Routing_Keys.md
+    │   │   ├── Exchange_Topologies.md
+    │   │   ├── Dead_Letter_Queues.md
+    │   │   ├── Retry_Strategies.md
+    │   │   ├── Message_Acknowledgements.md
+    │   │   ├── Idempotency.md
+    │   │   └── Ordering.md
+    │   │
+    │   └── Kafka/
+    │       ├── Kafka_Basics.md
+    │       ├── Topics_and_Partitions.md
+    │       ├── Consumer_Groups.md
+    │       ├── Offsets.md
+    │       ├── Schema_Registry.md
+    │       └── Ordering.md
+    │
+    ├── 03_Event_Design/
+    │   ├── Event_Naming.md
+    │   ├── Event_Versioning.md
+    │   ├── Event_Payload_Patterns.md
+    │   ├── Event_Carried_State_Transfer.md
+    │   ├── Event_Notification.md
+    │   ├── Claim_Check_Pattern.md
+    │   └── Correlation_IDs.md
+    │
+    ├── 04_Reliability/
+    │   ├── Dual_Write_Problem.md
+    │   ├── Transactional_Outbox.md
+    │   ├── Change_Data_Capture.md
+    │   ├── Event_Sourcing.md
+    │   ├── Exactly_Once_vs_At_Least_Once.md
+    │   └── Duplicate_Message_Handling.md
+    │
+    ├── 05_Distributed_Transactions/
+    │   ├── Saga.md
+    │   ├── Choreography_vs_Orchestration.md
+    │   ├── Compensation.md
+    │   └── Two_Phase_Commit.md
+    │
+    ├── 06_Architecture_Decisions/
+    │   ├── RabbitMQ_vs_Kafka.md
+    │   ├── Outbox_vs_CDC.md
+    │   ├── Choreography_vs_Orchestration.md
+    │   ├── Event_Driven_vs_Request_Response.md
+    │   └── Eventual_Consistency.md
+    │
+    └── diagrams/
+        ├── rabbitmq/
+        ├── kafka/
+        ├── saga/
+        ├── outbox/
+        └── cdc/
